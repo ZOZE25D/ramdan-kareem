@@ -1,20 +1,29 @@
 // script.js
 
-// ===== Smart Sound (Button Click) =====
 const startBtn = document.getElementById("startBtn");
 const sound = document.getElementById("ramadanSound");
-const loopDuration = 60; // ثانية
+const loopDuration = 60;
 
-startBtn.addEventListener("click", () => {
-  sound.currentTime = 0;
-  sound
-    .play()
-    .then(() => {
-      console.log("Sound started!");
-    })
-    .catch((err) => console.log("Playback error:", err));
+startBtn.addEventListener("click", function () {
+  // تشغيل الصوت بطريقة مضمونة
+  const playPromise = sound.play();
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        console.log("Sound started successfully!");
+      })
+      .catch((error) => {
+        console.log("Playback blocked, trying workaround...", error);
+        // Workaround: reset currentTime قبل play
+        sound.currentTime = 0;
+        sound.play().catch((err) => console.log("Still blocked:", err));
+      });
+  }
+
+  // إخفاء الزر
   startBtn.style.display = "none";
 
+  // loop أول دقيقة
   sound.addEventListener("timeupdate", () => {
     if (sound.currentTime >= loopDuration) {
       sound.currentTime = 0;
